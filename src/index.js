@@ -4,8 +4,14 @@ import { getPaymentDetails } from './api/payment/details';
 import * as Stripe from 'api/stripe';
 
 const app = express();
+app.use(express.json());
 
 // app.use('/', plaidRouter);
+
+app.get('/payment/:id', async (req, res) => {
+  const paymentDetails = await getPaymentDetails(req.params.id);
+  res.status(200).send(JSON.stringify({amount: paymentDetails.amount}));
+})
 
 app.post('/pay', async (req, res) => {
   const { public_token, account_id, paymentId, customer } = req.body;
