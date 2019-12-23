@@ -43,7 +43,7 @@ app.post('/pay', async (req, res) => {
   const bankAcct = await getStripeBankAccount(await getAccessToken(public_token), account_id);
   const paymentDetails = await getPaymentDetails(paymentId);
   const amount = paymentDetails.amount * 100;
-  if (customer.id) {
+  if (paymentDetails.cusId) {
     await Stripe.chargeUsd({
       amount,
       customerId: customer.id,
