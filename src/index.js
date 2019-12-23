@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import { plaidRouter, getStripeBankAccount, getAccessToken } from './api/plaid';
 import { getPaymentDetails } from './api/payment/details';
 import * as Stripe from 'api/stripe';
