@@ -1,3 +1,5 @@
+import plaidClient from 'config/plaid';
+
 export async function getAccessToken(publicToken) {
   const res = await plaidClient.exchangePublicToken(publicToken);
   return res.access_token;
