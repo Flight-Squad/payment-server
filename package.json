@@ -15,6 +15,7 @@
     "start": "node -r esm -r dotenv/config src/index.js"
   },
   "_moduleAliases": {
-    "api": "src/api"
+    "api": "src/api",
+    "config": "src/config"
   }
 }
