@@ -4,6 +4,28 @@ import { getPaymentDetails } from './api/payment/details';
 import * as Stripe from 'api/stripe';
 
 const app = express();
+
+// ONLY FOR DEVELOPMENT
+app.use(cors());
+
+// For Production/Staging
+
+// // From https://daveceddia.com/access-control-allow-origin-cors-errors-in-react-express/
+// // Set up a whitelist and check against it:
+// var whitelist = ['http://example1.com', 'http://example2.com']
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
+
+// // Then pass them to cors:
+// app.use(cors(corsOptions));
+
 app.use(express.json());
 
 // app.use('/', plaidRouter);
