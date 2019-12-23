@@ -46,7 +46,7 @@ app.post('/pay', async (req, res) => {
   if (paymentDetails.cusId) {
     await Stripe.chargeUsd({
       amount,
-      customerId: customer.id,
+      customerId: paymentDetails.cusId,
       source: customer.source,
     });
   } else {
