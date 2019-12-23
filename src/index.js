@@ -8,6 +8,8 @@ app.use(express.json());
 
 // app.use('/', plaidRouter);
 
+app.get('/', (req, res) => res.status(200).send('OK'));
+
 app.get('/payment/:id', async (req, res) => {
   const paymentDetails = await getPaymentDetails(req.params.id);
   res.status(200).send(JSON.stringify({amount: paymentDetails.amount}));
