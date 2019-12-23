@@ -19,5 +19,8 @@
   "_moduleAliases": {
     "api": "src/api",
     "config": "src/config"
+  },
+  "devDependencies": {
+    "@types/stripe": "^7.13.18"
   }
 }
