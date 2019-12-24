@@ -7,7 +7,19 @@ export async function getStripeId(customerDbId, customerDetails) {
   const snapshotData = snapshot.data();
 
   // If existing stripe customer, return their stripe id
-  if (snapshotData.stripe) return snapshotData.stripe;
+  if (snapshotData.stripe) {
+    const cusId = snapshotData.stripe;
+    const stripeCustomer = await stripe.customers.retrieve(cusId);
+
+    if (!stripeCustomer.sources.data.includes(customerDetails.bankAcct)) {
+
+      stripe.customers.createSource(cusId, {
+        source: customerDetails.bankAcct,
+      });
+    }
+
+    return cusId
+  };
 
   const { email, phone, firstName, lastName, dob, bankAcct } = customerDetails;
   const stripeCustomer = await createCustomer({
