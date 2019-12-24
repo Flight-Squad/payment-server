@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { plaidRouter, getStripeBankAccount, getAccessToken } from './api/plaid';
-import { getPaymentDetails } from './api/payment/details';
+import { getPaymentDetails, createPaymentDetails } from './api/payment/details';
 import * as Stripe from 'api/stripe';
 
 const app = express();
@@ -35,7 +35,29 @@ app.get('/', (req, res) => res.status(200).send('OK'));
 
 app.get('/payment/:id', async (req, res) => {
   const paymentDetails = await getPaymentDetails(req.params.id);
-  res.status(200).send(JSON.stringify({amount: paymentDetails.amount}));
+  res.status(200).send(JSON.stringify({ amount: paymentDetails.amount }));
+})
+
+/**
+ * Takes 3 fields in POST body: user: Object, amount: number, tripId: string
+ *
+ * `amount` is formatted as USD in dollars
+ *
+ * `user` must have an `id` and a `platform` field
+ *
+ * `tripId` is treated as paymentId
+ *
+ * For non automated orders, platform should be 'stripe' and `id` should be their stripe customer id
+ *
+ * Creates Payment details document
+ */
+app.post('/payment', async (req, res) => {
+  const { user, amount, tripId } = req.body;
+
+  // payment doc id
+  const id = await createPaymentDetails(user, amount, tripId);
+
+  res.status(201).send(JSON.stringify({ id }))
 })
 
 app.post('/pay', async (req, res) => {
@@ -50,7 +72,7 @@ app.post('/pay', async (req, res) => {
       source: customer.source,
     });
   } else {
-    const {email, phone, firstName, lastName, dob} = customer;
+    const { email, phone, firstName, lastName, dob } = customer;
     const stripeCustomer = await Stripe.createCustomer({
       name: `${firstName} ${lastName}`,
       email,
