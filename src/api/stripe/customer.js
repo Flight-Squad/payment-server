@@ -33,7 +33,7 @@ export async function getStripeId(customerDbId, customerDetails) {
   await customerDbDoc.set({
     ...customerDetails,
     stripe: stripeCustomer.id,
-  });
+  }, {merge: true});
 
   return stripeCustomer.id;
 }
