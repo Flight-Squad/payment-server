@@ -76,7 +76,7 @@ app.post('/pay', async (req, res) => {
   await Stripe.chargeUsd({
     amount,
     customerId: stripeId,
-    source: bankAcct,
+    // source: bankAcct,
   });
   console.log('Charged Customer')
 
