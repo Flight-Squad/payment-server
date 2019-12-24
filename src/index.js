@@ -55,36 +55,25 @@ app.post('/payment', async (req, res) => {
   const { user, amount, tripId } = req.body;
 
   // payment doc id
-  const id = await createPaymentDetails(user, amount, tripId);
+  const details = await createPaymentDetails(user, amount, tripId);
 
-  res.status(201).send(JSON.stringify({ id }))
+  res.status(201).send(JSON.stringify(details))
 })
 
 app.post('/pay', async (req, res) => {
   const { public_token, account_id, paymentId, customer } = req.body;
   const bankAcct = await getStripeBankAccount(await getAccessToken(public_token), account_id);
+
   const paymentDetails = await getPaymentDetails(paymentId);
+  const stripeId = await getStripeId(paymentDetails.customer.id, {...customer, bankAcct});
+
   const amount = paymentDetails.amount * 100;
-  if (paymentDetails.cusId) {
-    await Stripe.chargeUsd({
-      amount,
-      customerId: paymentDetails.cusId,
-      source: customer.source,
-    });
-  } else {
-    const { email, phone, firstName, lastName, dob } = customer;
-    const stripeCustomer = await Stripe.createCustomer({
-      name: `${firstName} ${lastName}`,
-      email,
-      phone,
-      source: bankAcct,
-      description: `via Plaid`,
-    })
-    await Stripe.chargeUsd({
-      amount,
-      customerId: stripeCustomer.id,
-    });
-  }
+
+  await Stripe.chargeUsd({
+    amount,
+    customerId: stripeId,
+    source: bankAcct,
+  });
 
   res.sendStatus(201);
 })

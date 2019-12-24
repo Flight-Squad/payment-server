@@ -18,8 +18,8 @@ export async function createPaymentDetails(user, chargeAmount, paymentId) {
   }
 
   const doc = db.collection(Collections.paymentDetails).doc(paymentId);
-  await doc.set(docData, {merge: true});
-  return doc.id;
+  await doc.set(docData, { merge: true });
+  return { id: doc.id, ...docData };
 }
 
 /**
@@ -29,7 +29,7 @@ export async function createPaymentDetails(user, chargeAmount, paymentId) {
  * Creates new customer if no matches are found.
  * @param {*} param0
  */
-async function getUser({id, platform}) {
+async function getUser({ id, platform }) {
   const customerColl = db.collection('customers');
   const customerSnapshot = await customerColl.where(platform, '==', id).get();
 
@@ -43,10 +43,10 @@ async function getUser({id, platform}) {
     customer.id = customerDoc.id;
   } else {
     const customerDoc = customerSnapshot.docs[0];
-    const {email, name} = customerDoc.data()
+    const { email, name } = customerDoc.data()
     customer.id = customerDoc.id;
-    customer.email = email;
-    customer.name = name;
+    customer.email = email || null;
+    customer.name = name || null;
   }
 
   return customer;

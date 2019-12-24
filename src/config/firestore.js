@@ -27,6 +27,7 @@ export const firebase = admin.database();
 export const Collections = {
   tripRequests: 'trip_requests',
   paymentDetails: 'payment_details',
+  customers: 'customers',
 };
 
 // export const AirportLocDoc = {

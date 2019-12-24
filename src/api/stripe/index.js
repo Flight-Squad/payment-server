@@ -1,9 +1,9 @@
 import stripeRouter from "./router";
 import { chargeUsd } from "./charge";
-import { createCustomer } from "./customer";
+import { getStripeId } from "./customer";
 
 export {
   stripeRouter,
   chargeUsd,
-  createCustomer,
+  getStripeId,
 }
