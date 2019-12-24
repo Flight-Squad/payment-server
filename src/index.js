@@ -63,11 +63,14 @@ app.post('/payment', async (req, res) => {
 app.post('/pay', async (req, res) => {
   const { public_token, account_id, paymentId, customer } = req.body;
   const bankAcct = await getStripeBankAccount(await getAccessToken(public_token), account_id);
+  console.log('Got Stripe Bank Acct')
 
   const paymentDetails = await getPaymentDetails(paymentId);
 
   // TODO: Refactor. This function is highly impure
   const stripeId = await Stripe.getStripeId(paymentDetails.customer.id, {...customer, bankAcct});
+
+  console.log('Got Stripe Customer ID')
 
   const amount = paymentDetails.amount * 100;
   await Stripe.chargeUsd({
@@ -75,6 +78,7 @@ app.post('/pay', async (req, res) => {
     customerId: stripeId,
     source: bankAcct,
   });
+  console.log('Charged Customer')
 
   res.sendStatus(201);
 })
