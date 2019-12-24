@@ -33,21 +33,23 @@ async function getUser({ id, platform }) {
   const customerColl = db.collection(Collections.customers);
   const customerSnapshot = await customerColl.where(platform, '==', id).get();
 
-  const customer = {};
+  let customer = {};
 
 
   if (customerSnapshot.empty) {
     const customerDoc = customerColl.doc()
     await customerDoc.set({
+      // platform key = platform user id
       [platform]: id,
-    });
+
+      // Could be useful for debugging later
+      id: customerDoc.id,
+    }, { merge: true });
     customer.id = customerDoc.id;
   } else {
     const customerDoc = customerSnapshot.docs[0];
-    const { email, name } = customerDoc.data()
+    customer = customerDoc.data()
     customer.id = customerDoc.id;
-    customer.email = email || null;
-    customer.name = name || null;
   }
   console.log(`platform=${platform} id=${id} ${customerSnapshot.size} customers found. Customer id=${customer.id}`);
 
