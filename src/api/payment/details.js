@@ -30,10 +30,11 @@ export async function createPaymentDetails(user, chargeAmount, paymentId) {
  * @param {*} param0
  */
 async function getUser({ id, platform }) {
-  const customerColl = db.collection('customers');
+  const customerColl = db.collection(Collections.customers);
   const customerSnapshot = await customerColl.where(platform, '==', id).get();
 
   const customer = {};
+
 
   if (customerSnapshot.empty) {
     const customerDoc = customerColl.doc()
@@ -48,6 +49,7 @@ async function getUser({ id, platform }) {
     customer.email = email || null;
     customer.name = name || null;
   }
+  console.log(`platform=${platform} id=${id} ${customerSnapshot.size} customers found. Customer id=${customer.id}`);
 
   return customer;
 }

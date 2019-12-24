@@ -56,6 +56,7 @@ app.post('/payment', async (req, res) => {
 
   // payment doc id
   const details = await createPaymentDetails(user, amount, tripId);
+  console.log(`Created payment details\n${JSON.stringify(details,null,2)}`);
 
   res.status(201).send(JSON.stringify(details))
 })
@@ -66,9 +67,12 @@ app.post('/pay', async (req, res) => {
   console.log('Got Stripe Bank Acct')
 
   const paymentDetails = await getPaymentDetails(paymentId);
+  const customerDbId = paymentDetails.customer.id;
+
+  console.log(`dbCustomer=${customerDbId}`)
 
   // TODO: Refactor. This function is highly impure
-  const stripeId = await Stripe.getStripeId(paymentDetails.customer.id, {...customer, bankAcct});
+  const stripeId = await Stripe.getStripeId(customerDbId, {...customer, bankAcct});
 
   console.log('Got Stripe Customer ID')
 
