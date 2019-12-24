@@ -10,7 +10,7 @@ export async function getStripeId(customerDbId, customerDetails) {
   if (snapshotData.stripe) {
     const cusId = snapshotData.stripe;
     await stripe.customers.update(cusId, {
-      default_source: bankAcct
+      default_source: customerDetails.bankAcct
     });
 
     return cusId
