@@ -13,7 +13,7 @@ export async function getPaymentDetails(paymentId) {
  */
 export async function createPaymentDetails(user, chargeAmount, paymentId) {
   const docData = {
-    amount: chargeAmount.toFixed(2),
+    amount: Number(chargeAmount).toFixed(2),
     customer: await getUser(user),
   }
 
