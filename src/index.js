@@ -52,10 +52,8 @@ app.get('/payment/:id', async (req, res) => {
  * Creates Payment details document
  */
 app.post('/payment', async (req, res) => {
-  const { user, amount, tripId } = req.body;
-
   // payment doc id
-  const details = await createPaymentDetails(user, amount, tripId);
+  const details = await createPaymentDetails(req.body);
   console.log(`Created payment details\n${JSON.stringify(details,null,2)}`);
 
   res.status(201).send(JSON.stringify(details))

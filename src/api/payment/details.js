@@ -1,4 +1,5 @@
 import { db, Collections } from "../../config/firestore";
+import moment from 'moment-timezone'
 
 
 export async function getPaymentDetails(paymentId) {
@@ -11,13 +12,14 @@ export async function getPaymentDetails(paymentId) {
  * @param {*} customer If prior customer, include customer id
  * @param {*} amount in US Dollars
  */
-export async function createPaymentDetails(user, chargeAmount, paymentId) {
+export async function createPaymentDetails({ user, amount, tripId, tripInfo }) {
   const docData = {
-    amount: Number(chargeAmount).toFixed(2),
+    amount: Number(amount).toFixed(2),
     customer: await getUser(user),
+    tripInfo,
   }
 
-  const doc = db.collection(Collections.paymentDetails).doc(paymentId);
+  const doc = db.collection(Collections.paymentDetails).doc(tripId);
   await doc.set(docData, { merge: true });
   return { id: doc.id, ...docData };
 }
@@ -54,4 +56,15 @@ async function getUser({ id, platform }) {
   console.log(`platform=${platform} id=${id} ${customerSnapshot.size} customers found. Customer id=${customer.id}`);
 
   return customer;
+}
+
+/**
+ * Take ISO String (from `date`) like `'2011-10-05T14:48:00.000Z'`
+ *
+ * and turn it into `'2011-10-05'`
+ * @param date
+ */
+function formatDateAsKebab(date) {
+  // split on 'T' and return first element string array
+  return date.toISOString().split('T')[0]
 }
