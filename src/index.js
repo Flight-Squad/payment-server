@@ -60,11 +60,22 @@ app.post('/payment', async (req, res) => {
 })
 
 app.post('/pay', async (req, res) => {
-  const { public_token, account_id, paymentId, customer } = req.body;
+  const { public_token, account_id, paymentId, customer, card_token } = req.body;
+  const paymentDetails = await getPaymentDetails(paymentId);
+  const amount = paymentDetails.amount * 100;
+
+  if (card_token) {
+    await Stripe.chargeUsd({
+      amount,
+      // customerId: stripeId,
+      source: card_token,
+    });
+    res.sendStatus(201);
+  }
+
   const bankAcct = await getStripeBankAccount(await getAccessToken(public_token), account_id);
   console.log('Got Stripe Bank Acct')
 
-  const paymentDetails = await getPaymentDetails(paymentId);
   const customerDbId = paymentDetails.customer.id;
 
   console.log(`dbCustomer=${customerDbId}`)
@@ -74,7 +85,6 @@ app.post('/pay', async (req, res) => {
 
   console.log('Got Stripe Customer ID')
 
-  const amount = paymentDetails.amount * 100;
   await Stripe.chargeUsd({
     amount,
     customerId: stripeId,
