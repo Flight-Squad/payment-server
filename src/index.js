@@ -54,7 +54,7 @@ app.get('/payment/:id', async (req, res) => {
 app.post('/payment', async (req, res) => {
   // payment doc id
   const details = await createPaymentDetails(req.body);
-  console.log(`Created payment details\n${JSON.stringify(details,null,2)}`);
+  console.log(`Created payment details\n${JSON.stringify(details, null, 2)}`);
 
   res.status(201).send(JSON.stringify(details))
 })
@@ -71,28 +71,28 @@ app.post('/pay', async (req, res) => {
       source: card_token,
     });
     res.sendStatus(201);
+  } else {
+    const bankAcct = await getStripeBankAccount(await getAccessToken(public_token), account_id);
+    console.log('Got Stripe Bank Acct')
+
+    const customerDbId = paymentDetails.customer.id;
+
+    console.log(`dbCustomer=${customerDbId}`)
+
+    // TODO: Refactor. This function is highly impure
+    const stripeId = await Stripe.getStripeId(customerDbId, { ...customer, bankAcct });
+
+    console.log('Got Stripe Customer ID')
+
+    await Stripe.chargeUsd({
+      amount,
+      customerId: stripeId,
+      // source: bankAcct,
+    });
+    console.log('Charged Customer')
+
+    res.sendStatus(201);
   }
-
-  const bankAcct = await getStripeBankAccount(await getAccessToken(public_token), account_id);
-  console.log('Got Stripe Bank Acct')
-
-  const customerDbId = paymentDetails.customer.id;
-
-  console.log(`dbCustomer=${customerDbId}`)
-
-  // TODO: Refactor. This function is highly impure
-  const stripeId = await Stripe.getStripeId(customerDbId, {...customer, bankAcct});
-
-  console.log('Got Stripe Customer ID')
-
-  await Stripe.chargeUsd({
-    amount,
-    customerId: stripeId,
-    // source: bankAcct,
-  });
-  console.log('Charged Customer')
-
-  res.sendStatus(201);
 })
 
 const port = process.env.PORT || 3001;
